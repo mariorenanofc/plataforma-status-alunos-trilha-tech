@@ -11,7 +11,7 @@ const cor = require('cors');
 dotenv.config(); 
 
 const app = express();
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.VITE_API_BASE_URL || 3000;
 
 app.use(cor({
     origin: 'https://plataforma-status-alunos-trilha-tec.vercel.app/',
