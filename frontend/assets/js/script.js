@@ -3,7 +3,7 @@
 // ===============================================
 
 const NUM_AULAS = 60;
-const API_BASE_URL = 'https://plataforma-status-alunos-trilha-tech.onrender.com/api';; // CONFIRME A PORTA DO SEU BACK-END
+const API_BASE_URL = process.env.VITE_API_BASE_URL || 'http://localhost:3000/api'; // CONFIRME A PORTA DO SEU BACK-END
 
 /**
  * Carrega a lista de alunos do Back-end (Rota pública /api/alunos).
