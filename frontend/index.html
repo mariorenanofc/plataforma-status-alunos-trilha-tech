@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sistema de Pendências - Florescendo Talentos</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+      .cabecalho-conteudo {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .btn-login-admin {
+        background-color: var(--cor-secundaria); 
+        color: white;
+        border: none;
+        padding: 8px 15px;
+        font-size: 0.9em;
+        border-radius: 4px;
+        cursor: pointer;
+        text-decoration: none;
+        transition: background-color 0.3s;
+      }
+      .btn-login-admin:hover {
+        background-color: #ffb74d; 
+      }
+      /* Ajuste a logo para caber na nova estrutura flex */
+      .cabecalho .logo-app {
+          align-items: flex-start;
+          padding: 20px 0;
+      }
+    </style>
+  </head>
+  <body>
+    <header class="cabecalho">
+        <div class="cabecalho-conteudo">
+            <div class="logo-app" onclick="mostrarSecao('inicio')">
+                <span class="florescendo">FLORESCENDO</span>
+                <span class="talentos">TALENTOS</span>
+                <span class="trilha">TRILHA TECH ACOMPANHAMENTO</span>
+            </div>
+            
+            <a href="login.html" class="btn-login-admin">
+                Login Admin 🔒
+            </a>
+        </div>
+    </header>
+
+    <nav class="menu-nav">
+      <ul>
+        <li><a href="#" onclick="mostrarSecao('inicio')">Início</a></li>
+        <li>
+          <a href="#" onclick="mostrarSecao('listaAlunos')"
+            >Lista de Alunos / Pendências</a
+          >
+        </li>
+        <li>
+          <a href="#" onclick="mostrarSecao('ranking')">Tela de Ranking</a>
+        </li>
+      </ul>
+    </nav>
+    
+    <main class="container">
+      <section id="inicio" class="conteudo-secao">
+        <h2>✨ Bem-vindo(a) ao Sistema de Acompanhamento!</h2>
+        <div class="intro-content">
+          <p>
+            Este sistema foi criado para ajudar você, aluno do projeto
+            Florescendo Talentos - Trilha Tech, a acompanhar o seu progresso e a
+            gerenciar suas entregas de atividades.
+          </p>
+
+          <h3>🎯 Nosso Objetivo: Transparência e Motivação</h3>
+          <ul>
+            <li>
+              Controle Total: Visualize de forma clara e objetiva todas as 52
+              aulas concluídas até o momento e identifique quais atividades
+              estão pendentes.
+            </li>
+            <li>
+              Filtro Rápido: Use a busca por nome e filtro por turma (1º ou 2º
+              Ano) para encontrar rapidamente a sua situação.
+            </li>
+            <li>
+              Competição Saudável: Acesse a Tela de Ranking para ver os alunos
+              que estão com o maior número de entregas em dia e inspire-se a
+              alcançar o Top 3!
+            </li>
+          </ul>
+
+          <p class="chamada-acao">
+            Clique em "Lista de Alunos / Pendências" no menu acima para começar
+            a acompanhar suas entregas.
+          </p>
+        </div>
+      </section>
+
+      <div id="conteudoDinamico"></div>
+    </main>
+
+    <div id="modalPendencias" class="modal">
+      <div class="modal-content">
+        <span class="fechar" onclick="fecharModal()">&times;</span>
+        <h3 id="modalTitulo">Detalhes das Pendências</h3>
+        <p><strong>Aluno:</strong> <span id="modalNomeAluno"></span></p>
+        <p><strong>Turma:</strong> <span id="modalTurmaAluno"></span></p>
+        <hr />
+        <h4>
+          Aulas Pendentes (Total: <span id="modalTotalPendencias"></span>)
+        </h4>
+        <ul id="listaPendencias"></ul>
+      </div>
+    </div>
+
+    <script src="assets/js/script.js"></script>
+  </body>
+</html>

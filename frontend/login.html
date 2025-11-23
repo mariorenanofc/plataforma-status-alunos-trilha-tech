@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Admin</title>
+    <link rel="stylesheet" href="assets/css/style.css"> 
+    <style>
+        /* Estilos específicos para a tela de login */
+        .login-box {
+            max-width: 400px;
+            margin: 80px auto;
+            padding: 30px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            text-align: center;
+        }
+        .login-box input[type="text"],
+        .login-box input[type="password"] {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .btn-login {
+            background-color: var(--cor-texto-principal);
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 15px;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+        .btn-login:hover {
+            background-color: #000055;
+        }
+        #loginMessage {
+            margin-top: 15px;
+            color: var(--cor-alerta);
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body style="background-color: var(--cor-fundo);">
+
+    <div class="login-box">
+        <h2>🔒 Login de Administrador</h2>
+        <div class="logo-app" style="font-size: 1.5em; margin-bottom: 20px;">
+            <span class="florescendo">FLORESCENDO</span>
+            <span class="talentos">TALENTOS</span>
+        </div>
+        
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="Usuário Admin" required>
+            <input type="password" id="password" placeholder="Senha" required>
+            <button type="submit" class="btn-login">Entrar</button>
+        </form>
+        
+        <p id="loginMessage"></p>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'http://localhost:3000/api'; // CONFIRME A PORTA DO SEU BACK-END
+
+        document.getElementById('loginForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const messageElement = document.getElementById('loginMessage');
+            messageElement.textContent = 'Aguarde...';
+
+            try {
+                const response = await fetch(`${API_BASE_URL}/admin/login`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Armazena o token no LocalStorage
+                    localStorage.setItem('adminToken', result.token);
+                    messageElement.textContent = 'Login bem-sucedido! Redirecionando...';
+                    messageElement.style.color = 'var(--cor-sucesso)';
+                    
+                    // Redireciona para a tela de coleta/administração
+                    window.location.href = 'coleta-dados.html';
+                } else {
+                    messageElement.textContent = result.message || 'Falha no login.';
+                    messageElement.style.color = 'var(--cor-alerta)';
+                }
+            } catch (error) {
+                console.error('Erro de conexão:', error);
+                messageElement.textContent = 'Erro de conexão com o servidor.';
+                messageElement.style.color = 'var(--cor-alerta)';
+            }
+        });
+    </script>
+</body>
+</html>

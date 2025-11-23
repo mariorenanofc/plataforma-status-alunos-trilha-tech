@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Coleta de Dados - Admin</title>
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <style>
+      /* ... (Estilos permanecem os mesmos) ... */
+      #inputRelatorio {
+        width: 100%;
+        min-height: 400px;
+        padding: 15px;
+        font-family: monospace;
+        font-size: 0.9em;
+        border: 2px solid var(--cor-texto-principal);
+        border-radius: 8px;
+        margin-bottom: 15px;
+      }
+      .btn-processar {
+        background-color: var(--cor-secundaria);
+        color: white;
+        border: none;
+        padding: 12px 20px;
+        font-size: 1.1em;
+        cursor: pointer;
+        border-radius: 6px;
+      }
+      .resultado-area {
+        margin-top: 20px;
+        padding: 15px;
+        border: 1px solid var(--cor-borda-tabela);
+        background-color: #f9f9f9;
+        border-radius: 6px;
+      }
+      .btn-admin {
+          background-color: #f44336; 
+          color: white;
+          border: none;
+          padding: 10px 15px;
+          font-size: 1em;
+          cursor: pointer;
+          border-radius: 6px;
+          margin-top: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+        // SCRIPT DE PROTEÇÃO E LOGOUT
+        const adminToken = localStorage.getItem('adminToken');
+        
+        // Se não houver token, redireciona para o login
+        if (!adminToken) {
+            alert('Acesso negado. Por favor, faça login.');
+            window.location.href = 'login.html';
+        }
+
+        function fazerLogout() {
+            localStorage.removeItem('adminToken');
+            window.location.href = 'login.html';
+        }
+    </script>
+    
+    <header class="cabecalho" style="display: flex; justify-content: space-between; align-items: center; padding: 20px;">
+      <h1>🛠️ Coleta e Lançamento de Pendências</h1>
+      <button onclick="fazerLogout()" class="btn-admin" style="margin-top: 0;">
+          Sair / Logout
+      </button>
+    </header>
+
+    <main class="container">
+      <section>
+        <h2>Passo 1: Cole o Texto do Relatório</h2>
+        <textarea
+          id="inputRelatorio"
+          placeholder="Cole o conteúdo do relatório de pendências do aluno aqui..."
+        ></textarea>
+
+        <button class="btn-processar" id="btnProcessar">
+          Processar e Gerar JSON
+        </button>
+      </section>
+
+      <hr />
+
+      <section class="resultado-area">
+        <h2>Passo 2: Resultado e Estrutura de Dados</h2>
+        <input type="hidden" id="jsonAlunoProcessado" />
+        <pre id="outputJSON"></pre>
+        <p id="alunoExistenteId" style="font-weight: bold; color: blue;"></p>
+      </section>
+
+      <div class="campo-turma" style="text-align: center; margin-bottom: 20px">
+        <label
+          for="selectTurmaLancamento"
+          style="font-weight: bold; margin-right: 10px"
+        >
+          Selecione a Turma do Aluno:
+        </label>
+        <select
+          id="selectTurmaLancamento"
+          style="padding: 8px; border-radius: 4px"
+        >
+          <option value="">-- Selecione --</option>
+          <option value="1º Ano">1º Ano</option>
+          <option value="2º Ano">2º Ano</option>
+        </select>
+      </div>
+
+      <div style="text-align: center; margin-top: 20px">
+        <button
+          class="btn-processar"
+          disabled
+          id="btnLancarDados"
+        >
+          💾 Lançar Dados do Aluno no Sistema
+        </button>
+      </div>
+      
+      <hr>
+
+      <section class="admin-tools" style="text-align: center; padding-bottom: 20px;">
+          <h2>Ferramentas de Administração</h2>
+          <p>O gerenciamento completo de dados (Deletar/Limpar) é feito diretamente no painel do MongoDB.</p>
+          <p style="margin-top: 5px; font-size: 0.9em; color: var(--cor-texto-principal);">
+              Use o botão de Logout para encerrar a sessão.
+          </p>
+      </section>
+
+      <p style="text-align: center; margin-top: 20px">
+        <a href="index.html">Voltar para o Sistema Público</a>
+      </p>
+    </main>
+
+    <script src="assets/js/script.js"></script>
+    <script src="assets/js/coletor.js"></script>
+  </body>
+</html>
