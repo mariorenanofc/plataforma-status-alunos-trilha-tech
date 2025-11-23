@@ -3,12 +3,20 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
+const cor = require('cors');
+
+
 
 // Carrega variáveis de ambiente do arquivo .env (segurança para dados sensíveis)
 dotenv.config(); 
 
 const app = express();
 const PORT = process.env.PORT || 3000;
+
+app.use(cor({
+    origin: 'https://plataforma-status-alunos-trilha-tec.vercel.app/',
+}));
+
 
 // Middleware: Permite que o Express leia JSON do corpo das requisições (POST/PUT)
 app.use(express.json());
