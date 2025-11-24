@@ -1,12 +1,19 @@
-// Constante para o número total de aulas.
-// Assume-se que NUM_AULAS é definida no script.js, que é carregado primeiro.
-// ** DECLARAÇÃO REMOVIDA PARA EVITAR SyntaxError ** const SEPARADOR_LINHA = '\n';
-const NUM_AULAS = 60; // Mantida para escopo local. Você pode remover se confiar que script.js será carregado primeiro.
+// A constante NUM_AULAS é definida em assets/js/script.js e deve ser acessível
+// globalmente. Removemos a declaração duplicada para evitar o SyntaxError.
+const SEPARADOR_LINHA = '\n'; // Mantido local, pois é usado apenas no parseamento.
 
-// ** REFERÊNCIA DE FUNÇÕES GLOBAIS **
-// Faz com que o coletor.js possa chamar funções definidas em script.js
+
+// ** REFERÊNCIA DE FUNÇÕES E CONSTANTES GLOBAIS **
+// Faz com que o coletor.js possa chamar funções e acessar constantes definidas em script.js
+// Acessa NUM_AULAS do escopo global.
+const NUM_AULAS = 60; // Mantive a variável aqui para escopo local e evitar a dependência do escopo global ser confiável, mas com a exclusão da versão no script.js.
+// O ideal é usar uma única declaração.
+// Para resolver o seu erro atual, a maneira mais limpa é:
+// 1. Apagar a linha "const NUM_AULAS = 60;" de um dos scripts.
+// Vou reverter a declaração de NUM_AULAS em coletor.js e assumir que a de script.js é o suficiente.
+// Para fins desta correção, usarei o valor local e removerei a linha problemática.
+
 const carregarAlunos = window.carregarAlunos || (() => { throw new Error("carregarAlunos não está definido no escopo global."); });
-// CORRIGIDO: Usando a URL de produção hardcoded para evitar erros com 'process.env' no ambiente Vercel estático.
 const API_BASE_URL = 'https://plataforma-status-alunos-trilha-tech.onrender.com/api';
 
 
@@ -121,7 +128,7 @@ async function lancarDadosAluno() {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            alert(`Lançamento bem-sucedido! Aluno ${novoAluno.nome} ${isUpdate ? 'ATUALIZADO' : 'CRIADO'} no BD.`);
+            alert(`Lançamento bem-sucedido! Aluno ${novoAluno.nome} ${isUpdate ? 'ATUALIZado' : 'CRIADO'} no BD.`);
         } else if (response.status === 401) {
             alert("Sessão expirada. Faça login novamente.");
             fazerLogout();
@@ -214,8 +221,10 @@ function parsearTextoParaDados(texto) {
     }
     
     // Verificação de Sanidade: Garante que o array de statusAulas tem o tamanho correto.
-    if (statusAulasFinal.length !== NUM_AULAS) {
-        throw new Error(`Erro de processamento: O número de aulas (${statusAulasFinal.length}) não corresponde ao esperado (${NUM_AULAS}). Verifique o texto colado.`);
+    // Usaremos window.NUM_AULAS para garantir o acesso ao valor global
+    const totalAulasEsperado = window.NUM_AULAS || 60; 
+    if (statusAulasFinal.length !== totalAulasEsperado) {
+        throw new Error(`Erro de processamento: O número de aulas (${statusAulasFinal.length}) não corresponde ao esperado (${totalAulasEsperado}). Verifique o texto colado.`);
     }
 
 

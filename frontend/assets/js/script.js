@@ -1,6 +1,4 @@
-// ===============================================
 // DADOS BASE E CONFIGURAÇÃO DA API
-// ===============================================
 
 const NUM_AULAS = 60;
 // CORREÇÃO: Usando a URL de produção do .env para garantir a conectividade em produção.
