@@ -7,7 +7,8 @@ const SEPARADOR_LINHA = '\n';
 // ** REFERÊNCIA DE FUNÇÕES GLOBAIS **
 // Faz com que o coletor.js possa chamar funções definidas em script.js
 const carregarAlunos = window.carregarAlunos || (() => { throw new Error("carregarAlunos não está definido no escopo global."); });
-const API_BASE_URL = process.env.VITE_API_BASE_URL || 'http://localhost:3000/api'; // CONFIRME A PORTA DO SEU BACK-END
+// CORREÇÃO: Usando a URL de produção do .env para garantir a conectividade em produção.
+const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://plataforma-status-alunos-trilha-tech.onrender.com/api';
 
 
 /**

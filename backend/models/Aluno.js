@@ -16,11 +16,11 @@ const AlunoSchema = new mongoose.Schema({
         required: true,
         enum: ['1º Ano', '2º Ano', 'Desconhecida'] // Limita os valores aceitos
     },
-    // Array que armazena 52 posições (0 ou 1) para cálculo de pendências/ranking
+    // Array que armazena 60 posições (0 ou 1) para cálculo de pendências/ranking (ajustado de 52 para 60)
     statusAulas: {
         type: [Number], // Array de números
         required: true,
-        validate: [arrayLimit, 'statusAulas deve ter exatamente 52 entradas.']
+        validate: [arrayLimit, 'statusAulas deve ter exatamente 60 entradas.']
     },
     // Objeto detalhado das pendências (para exibir no modal)
     pendenciasDetalhadas: {
