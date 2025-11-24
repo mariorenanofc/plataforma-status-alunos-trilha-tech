@@ -1,14 +1,13 @@
 // Constante para o número total de aulas.
-// Assume-se que NUM_AULAS é definido em script.js
-const NUM_AULAS = 60;
-const SEPARADOR_LINHA = '\n';
-
+// Assume-se que NUM_AULAS é definida no script.js, que é carregado primeiro.
+// ** DECLARAÇÃO REMOVIDA PARA EVITAR SyntaxError ** const SEPARADOR_LINHA = '\n';
+const NUM_AULAS = 60; // Mantida para escopo local. Você pode remover se confiar que script.js será carregado primeiro.
 
 // ** REFERÊNCIA DE FUNÇÕES GLOBAIS **
 // Faz com que o coletor.js possa chamar funções definidas em script.js
 const carregarAlunos = window.carregarAlunos || (() => { throw new Error("carregarAlunos não está definido no escopo global."); });
-// CORREÇÃO: Usando a URL de produção do .env para garantir a conectividade em produção.
-const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://plataforma-status-alunos-trilha-tech.onrender.com/api';
+// CORRIGIDO: Usando a URL de produção hardcoded para evitar erros com 'process.env' no ambiente Vercel estático.
+const API_BASE_URL = 'https://plataforma-status-alunos-trilha-tech.onrender.com/api';
 
 
 /**
@@ -163,7 +162,7 @@ function parsearTextoParaDados(texto) {
     const regexTarefa = /^Aula\s*(\d+)\s*-\s*(.+?)(?:\s*\((?:concluído|entregue com atraso)\))?$/i;
     
     // Itera sobre as linhas para extrair as informações de cada aula
-    for (let i = 0; i < linhas.length; i++) {
+    for (let i = 1; i < linhas.length; i++) { // Começa em i=1 para pular o nome do aluno
         const linha = linhas[i];
         const matchTarefa = linha.match(regexTarefa);
 
@@ -188,8 +187,8 @@ function parsearTextoParaDados(texto) {
                 }
                 proximoIndice++;
             }
-            // Se o status não for encontrado nas linhas seguintes, pula a linha de status presumida
-            if(statusEncontrado) i = proximoIndice;
+            // Se o status for encontrado, avança o índice para a linha que continha o status
+            if(statusEncontrado) i = proximoIndice -1; // Ajuste para que o for(i++) vá para a próxima aula
         }
     }
 

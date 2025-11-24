@@ -4,7 +4,7 @@
 
 const NUM_AULAS = 60;
 // CORREÇÃO: Usando a URL de produção do .env para garantir a conectividade em produção.
-const API_BASE_URL = process.env.VITE_API_BASE_URL || 'https://plataforma-status-alunos-trilha-tech.onrender.com/api'; 
+const API_BASE_URL = 'https://plataforma-status-alunos-trilha-tech.onrender.com/api'; 
 
 /**
  * Carrega a lista de alunos do Back-end (Rota pública /api/alunos).
