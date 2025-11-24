@@ -3,7 +3,7 @@
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const cor = require('cors');
+const cors = require('cors');
 
 
 
@@ -11,10 +11,12 @@ const cor = require('cors');
 dotenv.config(); 
 
 const app = express();
-const PORT = process.env.VITE_API_BASE_URL || 3000;
+const PORT = process.env.PORT || 3000;
 
-app.use(cor({
+app.use(cors({
     origin: 'https://plataforma-status-alunos-trilha-tec.vercel.app/',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    credentials: true,
 }));
 
 
