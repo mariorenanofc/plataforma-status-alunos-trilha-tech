@@ -33,9 +33,39 @@
           align-items: flex-start;
           padding: 20px 0;
       }
+
+      /* Estilos para o Loader */
+      .loader-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        display: none; /* Inicia oculto */
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .spinner {
+        border: 8px solid #f3f3f3;
+        border-top: 8px solid var(--cor-secundaria);
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+      }
     </style>
   </head>
   <body>
+    <div id="loader" class="loader-overlay">
+      <div class="spinner"></div>
+    </div>
+
     <header class="cabecalho">
         <div class="cabecalho-conteudo">
             <div class="logo-app" onclick="mostrarSecao('inicio')">

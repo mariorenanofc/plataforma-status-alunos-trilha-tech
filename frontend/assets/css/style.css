@@ -365,3 +365,123 @@ hr {
     margin-left: 8px;
     display: inline-block;
 }
+
+/* --- Media Queries for Responsiveness --- */
+@media (max-width: 992px) {
+    .container {
+        margin: 20px;
+        padding: 15px;
+    }
+    .cabecalho-conteudo, .ranking-layout, .campos-filtro {
+        flex-direction: column;
+        gap: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    .cabecalho h1 {
+        font-size: 1.8em;
+    }
+
+    .logo-app {
+        font-size: 2em;
+    }
+
+    .menu-nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .filtros input[type="text"],
+    .filtros select {
+        max-width: 100%;
+    }
+
+    /* Responsive Table - Card View */
+    #tabelaAlunos thead {
+        display: none;
+    }
+
+    #tabelaAlunos tr {
+        display: block;
+        margin-bottom: 15px;
+        border: 1px solid var(--cor-borda-tabela);
+        border-radius: 6px;
+        padding: 10px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    }
+    
+    #tabelaAlunos td {
+        display: block;
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+        border-bottom: 1px dotted var(--cor-borda-tabela);
+    }
+    
+    #tabelaAlunos td:last-child {
+        border-bottom: 0;
+    }
+
+    #tabelaAlunos td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 10px;
+        width: calc(50% - 20px);
+        padding-right: 10px;
+        white-space: nowrap;
+        text-align: left;
+        font-weight: bold;
+        color: var(--cor-texto-principal);
+    }
+
+    .progresso-container {
+        width: 100%; /* Make progress bar take up more space */
+    }
+
+    .modal-content {
+        width: 90%;
+        margin: 10% auto;
+        padding: 15px;
+    }
+
+    #inputRelatorio {
+        min-height: 300px;
+    }
+}
+
+@media (max-width: 480px) {
+    body {
+        font-size: 14px;
+    }
+
+    .cabecalho {
+        padding: 20px 0;
+    }
+
+    .container {
+        margin: 10px;
+    }
+    
+    h2 {
+        font-size: 1.3em;
+    }
+
+    .btn-processar, .btn-admin, .btn-detalhes {
+        width: 100%;
+        padding: 15px 10px;
+        font-size: 1.1em;
+    }
+
+    .card-rank {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 5px;
+    }
+
+    .card-rank .posicao {
+        align-self: flex-end;
+        font-size: 1.5em;
+        margin-right: 0;
+    }
+}

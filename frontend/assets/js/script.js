@@ -8,6 +8,21 @@ const API_BASE_URL = isLocal
     ? 'http://localhost:3000/api' // URL para testes locais
     : 'https://plataforma-status-alunos-trilha-tech.onrender.com/api'; // URL do servidor de produção 
 
+// Funções para controlar o loader
+function showLoader() {
+    const loader = document.getElementById('loader');
+    if (loader) {
+        loader.style.display = 'flex';
+    }
+}
+
+function hideLoader() {
+    const loader = document.getElementById('loader');
+    if (loader) {
+        loader.style.display = 'none';
+    }
+}
+
 /**
  * Carrega a lista de alunos do Back-end (Rota pública /api/alunos).
  */
@@ -114,21 +129,26 @@ function mostrarSecao(idSecao) {
 // ===============================================
 
 async function filtrarAlunos() {
-    const termoBusca = document.getElementById('inputBuscaNome')?.value.toLowerCase() || '';
-    const turmaSelecionada = document.getElementById('selectTurma')?.value || 'todos';
+    showLoader();
+    try {
+        const termoBusca = document.getElementById('inputBuscaNome')?.value.toLowerCase() || '';
+        const turmaSelecionada = document.getElementById('selectTurma')?.value || 'todos';
 
-    const todosAlunos = await carregarAlunos(); // Aguarda os dados da API
+        const todosAlunos = await carregarAlunos(); // Aguarda os dados da API
 
-    const alunosFiltrados = todosAlunos.filter(aluno => {
-        // Usa o ID do MongoDB (aluno._id) como ID local, se o 'id' não for definido
-        aluno.id = aluno._id;
+        const alunosFiltrados = todosAlunos.filter(aluno => {
+            // Usa o ID do MongoDB (aluno._id) como ID local, se o 'id' não for definido
+            aluno.id = aluno._id;
 
-        const matchNome = aluno.nome.toLowerCase().includes(termoBusca);
-        const matchTurma = (turmaSelecionada === 'todos' || aluno.turma === turmaSelecionada);
-        return matchNome && matchTurma;
-    });
+            const matchNome = aluno.nome.toLowerCase().includes(termoBusca);
+            const matchTurma = (turmaSelecionada === 'todos' || aluno.turma === turmaSelecionada);
+            return matchNome && matchTurma;
+        });
 
-    renderizarTabela(alunosFiltrados);
+        renderizarTabela(alunosFiltrados);
+    } finally {
+        hideLoader();
+    }
 }
 
 function renderizarTabela(listaDeAlunos) {
@@ -175,33 +195,38 @@ function renderizarTabela(listaDeAlunos) {
 }
 
 async function gerarRanking() {
-    const alunosData = await carregarAlunos(); // Aguarda os dados da API
+    showLoader();
+    try {
+        const alunosData = await carregarAlunos(); // Aguarda os dados da API
 
-    const rankingData = alunosData.map(aluno => {
-        const totalPendencias = calcularPendencias(aluno);
-        const totalEntregues = NUM_AULAS - totalPendencias;
-        return {
-            nome: aluno.nome,
-            entregues: totalEntregues,
-            pendencias: totalPendencias
-        };
-    });
-    // ... (restante da lógica de ordenação e renderização de ranking é o mesmo) ...
+        const rankingData = alunosData.map(aluno => {
+            const totalPendencias = calcularPendencias(aluno);
+            const totalEntregues = NUM_AULAS - totalPendencias;
+            return {
+                nome: aluno.nome,
+                entregues: totalEntregues,
+                pendencias: totalPendencias
+            };
+        });
+        // ... (restante da lógica de ordenação e renderização de ranking é o mesmo) ...
 
-    const rankingEntregues = [...rankingData].sort((a, b) => {
-        if (b.entregues !== a.entregues) { return b.entregues - a.entregues; }
-        return a.nome.localeCompare(b.nome);
-    });
-    const top5Entregues = rankingEntregues.slice(0, 5);
+        const rankingEntregues = [...rankingData].sort((a, b) => {
+            if (b.entregues !== a.entregues) { return b.entregues - a.entregues; }
+            return a.nome.localeCompare(b.nome);
+        });
+        const top5Entregues = rankingEntregues.slice(0, 5);
 
-    const rankingPendencias = [...rankingData].sort((a, b) => {
-        if (b.pendencias !== a.pendencias) { return b.pendencias - a.pendencias; }
-        return a.nome.localeCompare(b.nome);
-    });
-    const top5Pendencias = rankingPendencias.slice(0, 5);
+        const rankingPendencias = [...rankingData].sort((a, b) => {
+            if (b.pendencias !== a.pendencias) { return b.pendencias - a.pendencias; }
+            return a.nome.localeCompare(b.nome);
+        });
+        const top5Pendencias = rankingPendencias.slice(0, 5);
 
-    renderizarCardsRanking(top5Entregues, document.getElementById('topEntregasContainer'), 'entregues');
-    renderizarCardsRanking(top5Pendencias, document.getElementById('topPendenciasContainer'), 'pendencias');
+        renderizarCardsRanking(top5Entregues, document.getElementById('topEntregasContainer'), 'entregues');
+        renderizarCardsRanking(top5Pendencias, document.getElementById('topPendenciasContainer'), 'pendencias');
+    } finally {
+        hideLoader();
+    }
 }
 
 
@@ -235,68 +260,73 @@ function renderizarCardsRanking(lista, container, tipo) {
 }
 
 async function abrirModal(alunoId) {
-    // Busca o aluno pelo _id do MongoDB
-    const alunosData = await carregarAlunos();
-    const aluno = alunosData.find(a => a._id === alunoId);
-    if (!aluno) return;
+    showLoader();
+    try {
+        // Busca o aluno pelo _id do MongoDB
+        const alunosData = await carregarAlunos();
+        const aluno = alunosData.find(a => a._id === alunoId);
+        if (!aluno) return;
 
-    const listaPendenciasUL = document.getElementById('listaPendencias');
-    if (!listaPendenciasUL) return;
+        const listaPendenciasUL = document.getElementById('listaPendencias');
+        if (!listaPendenciasUL) return;
 
-    // ... (restante da lógica do modal é o mesmo, usando aluno.pendenciasDetalhadas) ...
-    // [Seu código existente para popular o modal]
+        // ... (restante da lógica do modal é o mesmo, usando aluno.pendenciasDetalhadas) ...
+        // [Seu código existente para popular o modal]
 
-    listaPendenciasUL.innerHTML = '';
-    let pendenciasCount = 0;
+        listaPendenciasUL.innerHTML = '';
+        let pendenciasCount = 0;
 
-    if (aluno.pendenciasDetalhadas && Object.keys(aluno.pendenciasDetalhadas).length > 0) {
-        for (const aulaNumStr in aluno.pendenciasDetalhadas) {
-            const aulaNum = parseInt(aulaNumStr);
-            const info = aluno.pendenciasDetalhadas[aulaNum];
+        if (aluno.pendenciasDetalhadas && Object.keys(aluno.pendenciasDetalhadas).length > 0) {
+            for (const aulaNumStr in aluno.pendenciasDetalhadas) {
+                const aulaNum = parseInt(aulaNumStr);
+                const info = aluno.pendenciasDetalhadas[aulaNum];
 
-            if (info.status === 'Completa') continue;
+                if (info.status === 'Completa') continue;
 
-            pendenciasCount++;
+                pendenciasCount++;
 
-            const iconeAula = (info.status === 'Atribuído') ? '❌' : '⚠️';
-            const corAula = (info.status === 'Atribuído') ? 'var(--cor-alerta)' : '#FFC107';
+                const iconeAula = (info.status === 'Atribuído') ? '❌' : '⚠️';
+                const corAula = (info.status === 'Atribuído') ? 'var(--cor-alerta)' : '#FFC107';
 
-            const li = document.createElement('li');
-            li.style.color = corAula;
-            li.style.fontWeight = 'bold';
-            li.innerHTML = `${iconeAula} Aula ${aulaNum} <span style="font-size: 0.9em; font-weight: normal;">(${info.status})</span>:`;
+                const li = document.createElement('li');
+                li.style.color = corAula;
+                li.style.fontWeight = 'bold';
+                li.innerHTML = `${iconeAula} Aula ${aulaNum} <span style="font-size: 0.9em; font-weight: normal;">(${info.status})</span>:`;
 
-            if (info.tarefas && info.tarefas.length > 0) {
-                const ulTarefas = document.createElement('ul');
-                ulTarefas.style.marginLeft = '15px';
-                ulTarefas.style.color = 'var(--cor-texto-principal)';
+                if (info.tarefas && info.tarefas.length > 0) {
+                    const ulTarefas = document.createElement('ul');
+                    ulTarefas.style.marginLeft = '15px';
+                    ulTarefas.style.color = 'var(--cor-texto-principal)';
 
-                info.tarefas.forEach(tarefa => {
-                    const liTarefa = document.createElement('li');
-                    liTarefa.innerHTML = `<span style="color: var(--cor-alerta);">•</span> ${tarefa}`;
-                    ulTarefas.appendChild(liTarefa);
-                });
-                li.appendChild(ulTarefas);
-            } else {
-                li.innerHTML += ' Pendência de entrega completa.';
+                    info.tarefas.forEach(tarefa => {
+                        const liTarefa = document.createElement('li');
+                        liTarefa.innerHTML = `<span style="color: var(--cor-alerta);">•</span> ${tarefa}`;
+                        ulTarefas.appendChild(liTarefa);
+                    });
+                    li.appendChild(ulTarefas);
+                } else {
+                    li.innerHTML += ' Pendência de entrega completa.';
+                }
+                listaPendenciasUL.appendChild(li);
             }
+        }
+
+        if (pendenciasCount === 0) {
+            const li = document.createElement('li');
+            li.style.color = 'var(--cor-sucesso)';
+            li.style.fontWeight = 'bold';
+            li.textContent = '✅ Parabéns! Nenhuma pendência encontrada com detalhes.';
             listaPendenciasUL.appendChild(li);
         }
+
+        document.getElementById('modalNomeAluno').textContent = aluno.nome;
+        document.getElementById('modalTurmaAluno').textContent = aluno.turma;
+        document.getElementById('modalTotalPendencias').textContent = pendenciasCount;
+
+        document.getElementById('modalPendencias').style.display = 'block';
+    } finally {
+        hideLoader();
     }
-
-    if (pendenciasCount === 0) {
-        const li = document.createElement('li');
-        li.style.color = 'var(--cor-sucesso)';
-        li.style.fontWeight = 'bold';
-        li.textContent = '✅ Parabéns! Nenhuma pendência encontrada com detalhes.';
-        listaPendenciasUL.appendChild(li);
-    }
-
-    document.getElementById('modalNomeAluno').textContent = aluno.nome;
-    document.getElementById('modalTurmaAluno').textContent = aluno.turma;
-    document.getElementById('modalTotalPendencias').textContent = pendenciasCount;
-
-    document.getElementById('modalPendencias').style.display = 'block';
 }
 
 function fecharModal() {
