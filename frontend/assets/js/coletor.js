@@ -60,7 +60,7 @@ async function processarRelatorio() {
         if (alunoExistente) {
             // Guarda o ID do MongoDB para a operação de UPDATE (PUT)
             document.getElementById('jsonAlunoProcessado').dataset.alunoId = alunoExistente._id;
-            statusExistente.textContent = `Aluno EXISTENTE (ID: ${alunoExistente._id}). Será feita uma ATUALIZAÇÃO (PUT).`;
+            statusExistente.textContent = "Aluno EXISTENTE. Será feita uma ATUALIZAÇÃO.";
 
             if (alunoExistente.turma && alunoExistente.turma !== "Desconhecida") {
                 selectTurmaLancamento.value = alunoExistente.turma;
@@ -132,7 +132,7 @@ async function lancarDadosAluno() {
         const result = await response.json();
 
         if (response.ok && result.success) {
-            alert(`Lançamento bem-sucedido! Aluno ${novoAluno.nome} ${isUpdate ? 'ATUALIZado' : 'CRIADO'} no BD.`);
+            alert(`✅ Lançamento bem-sucedido! Aluno ${novoAluno.nome} ${isUpdate ? '🔁 - Atualizado' : '👤 - CRIADO'} no Sistema.`);
             
             // Limpa a interface após o sucesso
             document.getElementById('outputJSON').textContent = "Aguardando próximo processamento...";
