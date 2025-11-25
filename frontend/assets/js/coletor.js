@@ -7,6 +7,18 @@ const SEPARADOR_LINHA = '\n';
 // As funções e constantes globais (carregarAlunos, fazerLogout, API_BASE_URL, NUM_AULAS)
 // são carregadas a partir de script.js e/ou do HTML antes deste script.
 
+// --- Funções de Controle do Loader ---
+const loader = document.getElementById('loader');
+const btnProcessar = document.getElementById('btnProcessar');
+const btnLancarDados = document.getElementById('btnLancarDados');
+
+function mostrarLoader() {
+    if(loader) loader.style.display = 'flex';
+}
+
+function esconderLoader() {
+    if(loader) loader.style.display = 'none';
+}
 
 /**
  * Inicia o processo de parseamento (análise) do texto colado.
@@ -30,10 +42,13 @@ async function processarRelatorio() {
 
     if (!textoRelatorio || textoRelatorio.trim().length < 50) {
         outputJSON.textContent = "Por favor, cole um relatório válido com dados suficientes.";
-        document.getElementById('btnLancarDados').disabled = true;
+        btnLancarDados.disabled = true;
         selectTurmaLancamento.value = "";
         return;
     }
+
+    mostrarLoader();
+    btnProcessar.disabled = true;
 
     try {
         const resultado = parsearTextoParaDados(textoRelatorio);
@@ -57,13 +72,16 @@ async function processarRelatorio() {
 
         outputJSON.textContent = JSON.stringify(resultado, null, 4);
         document.getElementById('jsonAlunoProcessado').value = JSON.stringify(resultado);
-        document.getElementById('btnLancarDados').disabled = false;
+        btnLancarDados.disabled = false;
 
         alert(`Dados de ${resultado.nome} processados. Turma checada. Clique em 'Lançar Dados'.`);
 
     } catch (error) {
         outputJSON.textContent = `Erro ao processar: ${error.message}`;
         console.error(error);
+    } finally {
+        esconderLoader();
+        btnProcessar.disabled = false;
     }
 }
 
@@ -91,6 +109,9 @@ async function lancarDadosAluno() {
         return;
     }
 
+    mostrarLoader();
+    btnLancarDados.disabled = true;
+
     const novoAluno = JSON.parse(jsonStr);
     novoAluno.turma = turmaSelecionada; // Injeta a turma
 
@@ -112,6 +133,13 @@ async function lancarDadosAluno() {
 
         if (response.ok && result.success) {
             alert(`Lançamento bem-sucedido! Aluno ${novoAluno.nome} ${isUpdate ? 'ATUALIZado' : 'CRIADO'} no BD.`);
+            
+            // Limpa a interface após o sucesso
+            document.getElementById('outputJSON').textContent = "Aguardando próximo processamento...";
+            document.getElementById('selectTurmaLancamento').value = "";
+            document.getElementById('alunoExistenteId').textContent = '';
+            document.getElementById('jsonAlunoProcessado').value = '';
+
         } else if (response.status === 401) {
             alert("Sessão expirada. Faça login novamente.");
             fazerLogout();
@@ -122,14 +150,12 @@ async function lancarDadosAluno() {
     } catch (error) {
         console.error("Erro ao comunicar com a API:", error);
         alert("Erro de rede. Verifique o console do navegador e o servidor Node.js.");
+    } finally {
+        esconderLoader();
+        // O botão de lançar permanece desabilitado até um novo processamento.
+        // Se quiser reabilitá-lo mesmo em caso de falha, descomente a linha abaixo
+        // btnLancarDados.disabled = false;
     }
-
-    // Limpa a interface
-    document.getElementById('btnLancarDados').disabled = true;
-    document.getElementById('outputJSON').textContent = "Aguardando próximo processamento...";
-    document.getElementById('selectTurmaLancamento').value = "";
-    document.getElementById('alunoExistenteId').textContent = '';
-    document.getElementById('jsonAlunoProcessado').value = '';
 }
 
 /**
@@ -226,12 +252,14 @@ function parsearTextoParaDados(texto) {
 // --- Final do arquivo: Anexando os eventos aos botões ---
 
 document.addEventListener('DOMContentLoaded', () => {
-    const btnProcessar = document.getElementById('btnProcessar');
+    // O código anterior que estava aqui foi movido para o topo do arquivo
+    // para garantir que as variáveis `btnProcessar` e `btnLancarDados`
+    // estejam disponíveis globalmente para as funções que as utilizam.
+    
     if (btnProcessar) {
         btnProcessar.addEventListener('click', processarRelatorio);
     }
 
-    const btnLancarDados = document.getElementById('btnLancarDados');
     if (btnLancarDados) {
         btnLancarDados.addEventListener('click', lancarDadosAluno);
     }
