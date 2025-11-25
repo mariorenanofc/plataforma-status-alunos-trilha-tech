@@ -15,7 +15,7 @@
         margin: 0 auto;
       }
       .btn-login-admin {
-        background-color: var(--cor-secundaria); 
+        background-color: var(--cor-secundaria);
         color: white;
         border: none;
         padding: 8px 15px;
@@ -26,12 +26,12 @@
         transition: background-color 0.3s;
       }
       .btn-login-admin:hover {
-        background-color: #ffb74d; 
+        background-color: #ffb74d;
       }
       /* Ajuste a logo para caber na nova estrutura flex */
       .cabecalho .logo-app {
-          align-items: flex-start;
-          padding: 20px 0;
+        align-items: flex-start;
+        padding: 20px 0;
       }
 
       /* Estilos para o Loader */
@@ -56,8 +56,12 @@
         animation: spin 1s linear infinite;
       }
       @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
       }
     </style>
   </head>
@@ -67,17 +71,15 @@
     </div>
 
     <header class="cabecalho">
-        <div class="cabecalho-conteudo">
-            <div class="logo-app" onclick="mostrarSecao('inicio')">
-                <span class="florescendo">FLORESCENDO</span>
-                <span class="talentos">TALENTOS</span>
-                <span class="trilha">TRILHA TECH ACOMPANHAMENTO</span>
-            </div>
-            
-            <a href="login.html" class="btn-login-admin">
-                Login Admin 🔒
-            </a>
+      <div class="cabecalho-conteudo">
+        <div class="logo-app" onclick="mostrarSecao('inicio')">
+          <span class="florescendo">FLORESCENDO</span>
+          <span class="talentos">TALENTOS</span>
+          <span class="trilha">TRILHA TECH ACOMPANHAMENTO</span>
         </div>
+
+        <a href="login.html" class="btn-login-admin"> Login Admin 🔒 </a>
+      </div>
     </header>
 
     <nav class="menu-nav">
@@ -93,23 +95,58 @@
         </li>
       </ul>
     </nav>
-    
+
     <main class="container">
       <section id="inicio" class="conteudo-secao">
-        <h2>✨ Bem-vindo(a) ao Sistema de Acompanhamento!</h2>
-        <div class="intro-content">
-          <p>
-            Este sistema foi criado para ajudar você, aluno do projeto
-            Florescendo Talentos - Trilha Tech, a acompanhar o seu progresso e a
-            gerenciar suas entregas de atividades.
-          </p>
+        <div class="hero-section">
+          <div class="hero-content">
+            <h2>Acompanhe Seu Progresso na Trilha Tech!</h2>
+            <p>
+              Seu caminho para o sucesso: Visualize entregas, pendências e seu
+              ranking.
+            </p>
 
-          <h3>🎯 Nosso Objetivo: Transparência e Motivação</h3>
+            <div class="stats-container">
+              <div class="stat-card">
+                <div class="valor">60</div>
+                <div class="legenda">Aulas no Total</div>
+              </div>
+              <div class="stat-card">
+                <div class="valor" id="totalAlunosHero">...</div>
+                <div class="legenda">Alunos no Sistema</div>
+              </div>
+              <div class="stat-card">
+                <div class="valor" id="alunosEmDiaHero">...</div>
+                <div class="legenda">Alunos Em Dia</div>
+              </div>
+            </div>
+
+            <p class="chamada-acao-hero">
+              Confira a sua posição no
+              <a href="#" onclick="mostrarSecao('ranking')"
+                >Ranking de Entregas</a
+              >!
+            </p>
+          </div>
+        </div>
+
+        <div
+          class="intro-content"
+          style="border-left: none; background-color: transparent; padding: 0"
+        >
+          <h3
+            style="
+              border-bottom: 2px solid var(--cor-secundaria);
+              margin-top: 25px;
+              padding-bottom: 5px;
+            "
+          >
+            ✨ Vantagens do Sistema de Acompanhamento
+          </h3>
           <ul>
             <li>
-              Controle Total: Visualize de forma clara e objetiva todas as 52
-              aulas concluídas até o momento e identifique quais atividades
-              estão pendentes.
+              Controle Total: Visualize de forma clara e objetiva todas as 60
+              aulas concluídas e identifique quais atividades estão pendentes.
             </li>
             <li>
               Filtro Rápido: Use a busca por nome e filtro por turma (1º ou 2º
@@ -117,14 +154,19 @@
             </li>
             <li>
               Competição Saudável: Acesse a Tela de Ranking para ver os alunos
-              que estão com o maior número de entregas em dia e inspire-se a
-              alcançar o Top 3!
+              com o maior número de entregas em dia e inspire-se a alcançar o
+              Top 5!
             </li>
           </ul>
 
-          <p class="chamada-acao">
-            Clique em "Lista de Alunos / Pendências" no menu acima para começar
-            a acompanhar suas entregas.
+          <p
+            class="chamada-acao"
+            style="margin-top: 15px; padding: 10px; font-size: 1.1em"
+          >
+            Próxima Ação:
+            <a href="#" onclick="mostrarSecao('listaAlunos')"
+              >Clique aqui para ver a Lista de Alunos / Pendências.</a
+            >
           </p>
         </div>
       </section>
@@ -147,7 +189,16 @@
     </div>
 
     <script src="assets/js/script.js"></script>
-    <footer class="footer" style=" z-index: 0;display: flex; justify-content: center; text-align: center; padding: 10px;">
+    <footer
+      class="footer"
+      style="
+        z-index: 0;
+        display: flex;
+        justify-content: center;
+        text-align: center;
+        padding: 10px;
+      "
+    >
       <p>Desenvolvido por Mário Renan - Tutor Trilha tech</p>
     </footer>
   </body>

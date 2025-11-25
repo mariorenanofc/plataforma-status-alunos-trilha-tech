@@ -48,6 +48,42 @@ function calcularPendencias(aluno) {
     return aluno.statusAulas.filter(status => status === 0).length;
 }
 
+/**
+ * Popula os cards de estatísticas da Hero Section na tela inicial.
+ */
+async function popularHeroSection() {
+    const totalAlunosElement = document.getElementById('totalAlunosHero');
+    const alunosEmDiaElement = document.getElementById('alunosEmDiaHero');
+    
+    if (!totalAlunosElement || !alunosEmDiaElement) return;
+
+    // Coloca placeholders enquanto carrega
+    totalAlunosElement.textContent = '...';
+    alunosEmDiaElement.textContent = '...';
+    showLoader(); // Mostra o loader durante o carregamento dos dados
+
+    try {
+        const alunosData = await carregarAlunos(); // Função existente que carrega os dados da API
+        const totalAlunos = alunosData.length;
+        
+        // Calcula a quantidade de alunos com 0 pendências
+        const alunosEmDia = alunosData.filter(aluno => {
+            const pendencias = calcularPendencias(aluno);
+            return pendencias === 0;
+        }).length;
+        
+        totalAlunosElement.textContent = totalAlunos;
+        alunosEmDiaElement.textContent = alunosEmDia;
+
+    } catch (error) {
+        totalAlunosElement.textContent = '--';
+        alunosEmDiaElement.textContent = '--';
+        console.error("Erro ao popular Hero Section:", error);
+    } finally {
+        hideLoader(); // Esconde o loader
+    }
+}
+
 
 // ===============================================
 // HTML DOS COMPONENTES E FUNÇÕES DE NAVEGAÇÃO
@@ -113,6 +149,7 @@ function mostrarSecao(idSecao) {
 
     if (idSecao === 'inicio') {
         secaoInicio.style.display = 'block';
+        popularHeroSection(); // CHAMADA PARA POPULAR AS ESTATÍSTICAS
     } else if (idSecao === 'listaAlunos') {
         conteudoDinamico.innerHTML = HTML_LISTA_ALUNOS;
         // Chama a função assíncrona
@@ -171,20 +208,20 @@ function renderizarTabela(listaDeAlunos) {
         const corBarra = porcentagem < 50 ? 'var(--cor-alerta)' : 'var(--cor-primaria)';
 
         const linha = document.createElement('tr');
-        // Usamos aluno._id para o modal
+        // CORREÇÃO ESSENCIAL: Adicionando o atributo data-label para a responsividade (Card View)
         linha.innerHTML = `
-            <td>${aluno.nome}</td>
-            <td>${aluno.turma}</td>
-            <td class="coluna-pendencias" style="color: ${corPendencia};">
+            <td data-label="Aluno:">${aluno.nome}</td>
+            <td data-label="Turma:">${aluno.turma}</td>
+            <td data-label="Pendências:" class="coluna-pendencias" style="color: ${corPendencia};">
                 ${totalPendencias} Pendência(s)
             </td>
-            <td>
+            <td data-label="Progresso:">
                 <div class="progresso-container">
                     <div class="progresso-bar" style="width: ${porcentagem}%; background-color: ${corBarra};"></div>
                 </div>
                 <span class="progresso-texto" style="color: ${corBarra};">${porcentagem}%</span>
             </td>
-            <td>
+            <td data-label="Ações:">
                 <button class="btn-detalhes" onclick="abrirModal('${aluno._id}')">
                     Detalhes
                 </button>
@@ -270,9 +307,7 @@ async function abrirModal(alunoId) {
         const listaPendenciasUL = document.getElementById('listaPendencias');
         if (!listaPendenciasUL) return;
 
-        // ... (restante da lógica do modal é o mesmo, usando aluno.pendenciasDetalhadas) ...
-        // [Seu código existente para popular o modal]
-
+        // Limpeza e inicialização
         listaPendenciasUL.innerHTML = '';
         let pendenciasCount = 0;
 
@@ -284,37 +319,39 @@ async function abrirModal(alunoId) {
                 if (info.status === 'Completa') continue;
 
                 pendenciasCount++;
-
+                
+                // NOVO: Define classes e textos baseados no status para uso no CSS
                 const iconeAula = (info.status === 'Atribuído') ? '❌' : '⚠️';
-                const corAula = (info.status === 'Atribuído') ? 'var(--cor-alerta)' : '#FFC107';
+                const statusClass = (info.status === 'Atribuído') ? 'aula-status-atribuido' : 'aula-status-quase-completa';
+                const statusTexto = (info.status === 'Atribuído') ? 'Pendente (Atribuído)' : 'Em Revisão (Quase Completa)';
+
 
                 const li = document.createElement('li');
-                li.style.color = corAula;
-                li.style.fontWeight = 'bold';
-                li.innerHTML = `${iconeAula} Aula ${aulaNum} <span style="font-size: 0.9em; font-weight: normal;">(${info.status})</span>:`;
+                li.className = statusClass; // Aplica a classe CSS para o card de aula
+                
+                let liContent = `<span class="titulo-aula-pendencia">${iconeAula} Aula ${aulaNum}: ${statusTexto}</span>`;
 
                 if (info.tarefas && info.tarefas.length > 0) {
-                    const ulTarefas = document.createElement('ul');
-                    ulTarefas.style.marginLeft = '15px';
-                    ulTarefas.style.color = 'var(--cor-texto-principal)';
-
+                    let ulTarefasContent = '';
                     info.tarefas.forEach(tarefa => {
-                        const liTarefa = document.createElement('li');
-                        liTarefa.innerHTML = `<span style="color: var(--cor-alerta);">•</span> ${tarefa}`;
-                        ulTarefas.appendChild(liTarefa);
+                        // NOVO: Estrutura a lista de tarefas aninhada
+                        ulTarefasContent += `<li><span style="color: var(--cor-alerta);">●</span> ${tarefa}</li>`;
                     });
-                    li.appendChild(ulTarefas);
+                    
+                    liContent += `<p style="font-weight: normal; margin-top: 8px;">**Tarefas Pendentes:**</p>`;
+                    liContent += `<ul class="lista-tarefas-pendentes">${ulTarefasContent}</ul>`;
                 } else {
-                    li.innerHTML += ' Pendência de entrega completa.';
+                    liContent += '<p style="font-style: italic; font-size: 0.9em; margin-top: 5px;">Entrega incompleta/faltando, sem tarefas detalhadas no relatório.</p>';
                 }
+                
+                li.innerHTML = liContent;
                 listaPendenciasUL.appendChild(li);
             }
         }
 
         if (pendenciasCount === 0) {
             const li = document.createElement('li');
-            li.style.color = 'var(--cor-sucesso)';
-            li.style.fontWeight = 'bold';
+            li.className = 'aula-status-ok'; // Aplica a classe de sucesso
             li.textContent = '✅ Parabéns! Nenhuma pendência encontrada com detalhes.';
             listaPendenciasUL.appendChild(li);
         }
