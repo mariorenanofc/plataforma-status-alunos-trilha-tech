@@ -11,12 +11,26 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-// 1. CORREÇÃO CRUCIAL DO CORS: Usar apenas o pacote CORS e remover a barra final (/) da URL.
+// 1. CORREÇÃO CRUCIAL DO CORS: Configuração flexível para DEV e PROD.
+const allowedOrigins = [
+    'https://plataforma-status-alunos-trilha-tec.vercel.app', // URL de produção do Frontend
+    'http://localhost',
+    'http://127.0.0.1',
+    'http://localhost:3000', // Exemplo com porta comum de Live Server
+    'http://127.0.0.1:5500'
+];
+
 app.use(cors({
-    // URL exata do Front-end no Vercel (sem a barra final /)
-    origin: 'https://plataforma-status-alunos-trilha-tec.vercel.app', 
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Permite todos os métodos necessários
-    credentials: true, // Necessário para enviar o token (JWT)
+    origin: function (origin, callback) {
+        // Permite requisições sem 'origin' (ex: Postman, apps mobile) ou se a origem estiver na lista
+        if (!origin || allowedOrigins.some(allowedOrigin => origin.startsWith(allowedOrigin))) {
+            callback(null, true);
+        } else {
+            callback(new Error('A política de CORS não permite acesso desta origem.'));
+        }
+    },
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true,
 }));
 
 

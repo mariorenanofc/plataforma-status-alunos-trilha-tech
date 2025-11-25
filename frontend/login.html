@@ -64,9 +64,11 @@
     </div>
 
     <script>
-      // CORREÇÃO: Usando a URL de produção do .env para consistência.
-      const API_BASE_URL =
-        "https://plataforma-status-alunos-trilha-tech.onrender.com/api"; 
+      // Configuração dinâmica da API para suportar DEV (local) e PROD (online)
+      const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+      const API_BASE_URL = isLocal
+          ? 'http://localhost:3000/api' // URL para testes locais
+          : 'https://plataforma-status-alunos-trilha-tech.onrender.com/api'; // URL do servidor de produção
 
       document
         .getElementById("loginForm")

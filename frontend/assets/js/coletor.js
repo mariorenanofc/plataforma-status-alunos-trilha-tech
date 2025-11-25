@@ -4,20 +4,9 @@ const SEPARADOR_LINHA = '\n';
 
 
 // ** REFERÊNCIA DE FUNÇÕES E CONSTANTES GLOBAIS **
-// Faz com que o coletor.js possa chamar funções e acessar constantes definidas em script.js
+// As funções e constantes globais (carregarAlunos, fazerLogout, API_BASE_URL, NUM_AULAS)
+// são carregadas a partir de script.js e/ou do HTML antes deste script.
 
-const carregarAlunos = window.carregarAlunos || (() => { throw new Error("carregarAlunos não está definido no escopo global."); });
-// A constante API_BASE_URL agora é acessada a partir de script.js
-
-
-
-/**
- * Função de Logout (reutilizada do coleta-dados.html)
- */
-function fazerLogout() {
-    localStorage.removeItem('adminToken');
-    window.location.href = 'login.html';
-}
 
 /**
  * Inicia o processo de parseamento (análise) do texto colado.

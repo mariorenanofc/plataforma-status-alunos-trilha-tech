@@ -1,8 +1,12 @@
 // DADOS BASE E CONFIGURAÇÃO DA API
 
 const NUM_AULAS = 60;
-// CORREÇÃO: Usando a URL de produção do .env para garantir a conectividade em produção.
-const API_BASE_URL = 'https://plataforma-status-alunos-trilha-tech.onrender.com/api'; 
+
+// Configuração dinâmica da API para suportar DEV (local) e PROD (online)
+const isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+const API_BASE_URL = isLocal
+    ? 'http://localhost:3000/api' // URL para testes locais
+    : 'https://plataforma-status-alunos-trilha-tech.onrender.com/api'; // URL do servidor de produção 
 
 /**
  * Carrega a lista de alunos do Back-end (Rota pública /api/alunos).
@@ -301,5 +305,19 @@ function fecharModal() {
 
 
 document.addEventListener('DOMContentLoaded', () => {
-    // A inicialização ainda chama mostrarSecao que, por sua vez, chama as funções assíncronas.
+    // Gerencia o botão de Login/Área do Admin com base no token
+    function gerenciarBotaoAdmin() {
+        const adminButton = document.querySelector('.btn-login-admin');
+        if (!adminButton) return;
+
+        const adminToken = localStorage.getItem('adminToken');
+
+        if (adminToken) {
+            adminButton.textContent = 'Área do Admin ⚙️';
+            adminButton.href = 'coleta-dados.html';
+        }
+        // Se não houver token, o botão permanece com seu estado padrão do HTML (Login Admin)
+    }
+
+    gerenciarBotaoAdmin();
 });
