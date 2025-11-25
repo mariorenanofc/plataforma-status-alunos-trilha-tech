@@ -7,8 +7,8 @@ const SEPARADOR_LINHA = '\n';
 // Faz com que o coletor.js possa chamar funções e acessar constantes definidas em script.js
 
 const carregarAlunos = window.carregarAlunos || (() => { throw new Error("carregarAlunos não está definido no escopo global."); });
-// Acessamos API_BASE_URL usando a string hardcoded para o ambiente de produção.
-const API_BASE_URL = 'https://plataforma-status-alunos-trilha-tech.onrender.com/api';
+// A constante API_BASE_URL agora é acessada a partir de script.js
+
 
 
 /**
