@@ -390,7 +390,7 @@ hr {
     cursor: pointer;
 }
 
-/* NOVO: ESTILOS PARA O CONTEÚDO DO MODAL DE PENDÊNCIAS */
+/* ESTILOS PARA O CONTEÚDO DO MODAL DE PENDÊNCIAS */
 #listaPendencias {
     list-style: none;
     padding: 0;
@@ -519,6 +519,17 @@ hr {
     font-size: 1.2em;
     margin-bottom: 30px;
     opacity: 0.9;
+}
+
+/* NOVO: Estilo para a Notificação de Última Atualização na Hero Section */
+.update-notification {
+    margin: 20px auto 0;
+    font-size: 0.9em;
+    color: var(--cor-fundo); /* Off-white, para contraste no fundo escuro */
+    padding: 8px 15px;
+    border-radius: 4px;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: inline-block;
 }
 
 /* Cards de Estatísticas */
@@ -658,10 +669,10 @@ hr {
         content: attr(data-label);
         position: absolute;
         left: 10px;
-        width: 40%; /* Ajusta largura da label para caber melhor */
+        width: 20%; /* Ajusta largura da label para caber melhor */
         padding-right: 10px;
         white-space: nowrap;
-        text-align: right; /* Alinha a label à direita antes do valor */
+        text-align: left; /* Alinha a label à direita antes do valor */
         font-weight: 600;
         color: var(--cor-secundaria); /* Usa a cor secundária para destaque */
     }

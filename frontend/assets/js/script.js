@@ -8,6 +8,10 @@ const API_BASE_URL = isLocal
     ? 'http://localhost:3000/api' // URL para testes locais
     : 'https://plataforma-status-alunos-trilha-tech.onrender.com/api'; // URL do servidor de produção 
 
+// NOVO: Variável global para armazenar os dados dos alunos carregados em cache.
+let alunosDataCache = [];
+
+
 // Funções para controlar o loader
 function showLoader() {
     const loader = document.getElementById('loader');
@@ -25,8 +29,14 @@ function hideLoader() {
 
 /**
  * Carrega a lista de alunos do Back-end (Rota pública /api/alunos).
+ * Implementa cache para evitar múltiplas chamadas à API e garante que todos
+ * os outros componentes possam usar esta mesma lista.
  */
 async function carregarAlunos() {
+    if (alunosDataCache.length > 0) {
+        return alunosDataCache;
+    }
+    
     try {
         const response = await fetch(`${API_BASE_URL}/alunos`);
 
@@ -35,10 +45,10 @@ async function carregarAlunos() {
         }
 
         const result = await response.json();
-        return result.data || []; // Retorna o array de dados
+        alunosDataCache = result.data || []; // Armazena no cache
+        return alunosDataCache;
     } catch (error) {
         console.error("Erro ao carregar dados do servidor:", error);
-        // Em um ambiente público, podemos tentar retornar dados de fallback
         return [];
     }
 }
@@ -49,24 +59,60 @@ function calcularPendencias(aluno) {
 }
 
 /**
- * Popula os cards de estatísticas da Hero Section na tela inicial.
+ * Encontra e formata a data da última atualização entre todos os alunos.
+ * @param {Array} alunos Lista de objetos Aluno.
+ * @returns {string} Data formatada ou mensagem padrão.
+ */
+function getLastUpdateTime(alunos) {
+    if (!alunos || alunos.length === 0) {
+        return "Nenhuma atualização encontrada.";
+    }
+
+    // Encontra a data mais recente
+    const latestDate = alunos.reduce((maxDate, aluno) => {
+        const currentData = new Date(aluno.dataAtualizacao);
+        return currentData > maxDate ? currentData : maxDate;
+    }, new Date(0)); 
+
+    if (latestDate.getTime() === new Date(0).getTime()) {
+        return "Nenhuma atualização recente.";
+    }
+
+    // Formatação da data (Ex: 25/11/2025 às 09:15)
+    const options = { 
+        year: 'numeric', 
+        month: '2-digit', 
+        day: '2-digit', 
+        hour: '2-digit', 
+        minute: '2-digit', 
+        hour12: false 
+    };
+    
+    return latestDate.toLocaleDateString('pt-BR', options).replace(',', ' às');
+}
+
+
+/**
+ * Popula os cards de estatísticas da Hero Section na tela inicial, 
+ * incluindo a notificação de última atualização.
  */
 async function popularHeroSection() {
     const totalAlunosElement = document.getElementById('totalAlunosHero');
     const alunosEmDiaElement = document.getElementById('alunosEmDiaHero');
-    
+    const updateNotificationElement = document.getElementById('lastUpdateNotification');
+
     if (!totalAlunosElement || !alunosEmDiaElement) return;
 
-    // Coloca placeholders enquanto carrega
     totalAlunosElement.textContent = '...';
     alunosEmDiaElement.textContent = '...';
-    showLoader(); // Mostra o loader durante o carregamento dos dados
+    if (updateNotificationElement) updateNotificationElement.textContent = 'Carregando última atualização...';
+
+    showLoader(); 
 
     try {
-        const alunosData = await carregarAlunos(); // Função existente que carrega os dados da API
+        const alunosData = await carregarAlunos(); // Agora usa cache
         const totalAlunos = alunosData.length;
         
-        // Calcula a quantidade de alunos com 0 pendências
         const alunosEmDia = alunosData.filter(aluno => {
             const pendencias = calcularPendencias(aluno);
             return pendencias === 0;
@@ -74,13 +120,20 @@ async function popularHeroSection() {
         
         totalAlunosElement.textContent = totalAlunos;
         alunosEmDiaElement.textContent = alunosEmDia;
+        
+        // NOVO: Exibe a data de atualização
+        if (updateNotificationElement) {
+            const lastUpdateTime = getLastUpdateTime(alunosData);
+            updateNotificationElement.innerHTML = ` Última Atualização: <strong>${lastUpdateTime}</strong>`;
+        }
 
     } catch (error) {
         totalAlunosElement.textContent = '--';
         alunosEmDiaElement.textContent = '--';
+        if (updateNotificationElement) updateNotificationElement.textContent = 'Falha ao carregar dados.';
         console.error("Erro ao popular Hero Section:", error);
     } finally {
-        hideLoader(); // Esconde o loader
+        hideLoader(); 
     }
 }
 
@@ -149,7 +202,7 @@ function mostrarSecao(idSecao) {
 
     if (idSecao === 'inicio') {
         secaoInicio.style.display = 'block';
-        popularHeroSection(); // CHAMADA PARA POPULAR AS ESTATÍSTICAS
+        popularHeroSection(); // CHAMADA PARA POPULAR AS ESTATÍSTICAS (que agora usa cache)
     } else if (idSecao === 'listaAlunos') {
         conteudoDinamico.innerHTML = HTML_LISTA_ALUNOS;
         // Chama a função assíncrona
@@ -171,7 +224,7 @@ async function filtrarAlunos() {
         const termoBusca = document.getElementById('inputBuscaNome')?.value.toLowerCase() || '';
         const turmaSelecionada = document.getElementById('selectTurma')?.value || 'todos';
 
-        const todosAlunos = await carregarAlunos(); // Aguarda os dados da API
+        const todosAlunos = await carregarAlunos(); // Aguarda os dados do cache ou API
 
         const alunosFiltrados = todosAlunos.filter(aluno => {
             // Usa o ID do MongoDB (aluno._id) como ID local, se o 'id' não for definido
@@ -234,7 +287,7 @@ function renderizarTabela(listaDeAlunos) {
 async function gerarRanking() {
     showLoader();
     try {
-        const alunosData = await carregarAlunos(); // Aguarda os dados da API
+        const alunosData = await carregarAlunos(); // Aguarda os dados do cache ou API
 
         const rankingData = alunosData.map(aluno => {
             const totalPendencias = calcularPendencias(aluno);
@@ -320,7 +373,7 @@ async function abrirModal(alunoId) {
 
                 pendenciasCount++;
                 
-                // NOVO: Define classes e textos baseados no status para uso no CSS
+                // Define classes e textos baseados no status para uso no CSS
                 const iconeAula = (info.status === 'Atribuído') ? '❌' : '⚠️';
                 const statusClass = (info.status === 'Atribuído') ? 'aula-status-atribuido' : 'aula-status-quase-completa';
                 const statusTexto = (info.status === 'Atribuído') ? 'Pendente (Atribuído)' : 'Em Revisão (Quase Completa)';
@@ -334,7 +387,7 @@ async function abrirModal(alunoId) {
                 if (info.tarefas && info.tarefas.length > 0) {
                     let ulTarefasContent = '';
                     info.tarefas.forEach(tarefa => {
-                        // NOVO: Estrutura a lista de tarefas aninhada
+                        // Estrutura a lista de tarefas aninhada
                         ulTarefasContent += `<li><span style="color: var(--cor-alerta);">●</span> ${tarefa}</li>`;
                     });
                     
@@ -387,4 +440,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     gerenciarBotaoAdmin();
+    
+    // NOVO: Inicia o carregamento de dados e a atualização da Hero Section Imediatamente
+    popularHeroSection(); 
 });
